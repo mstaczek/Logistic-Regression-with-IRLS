@@ -2,6 +2,7 @@ import numpy as np
 import warnings
 from sklearn.exceptions import ConvergenceWarning
 import pandas as pd
+from scipy.special import expit
 
 class LR():
     def __init__(self, maximisation_minorisation = False):
@@ -9,7 +10,7 @@ class LR():
         self.maximisation_minorisation = maximisation_minorisation
         
     def sigmoid(self, X, β):
-        return 1/(1+np.exp(X @ β))
+        return expit(X @ β)
 
     def fit(self, X, Y, iter_max = 100, interactions = [], l2=0): 
         
