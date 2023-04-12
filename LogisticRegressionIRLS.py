@@ -2,7 +2,6 @@ import numpy as np
 import warnings
 from sklearn.exceptions import ConvergenceWarning
 import pandas as pd
-from scipy.special import expit
 
 class LR():
     def __init__(self, maximisation_minorisation = False):
@@ -10,7 +9,7 @@ class LR():
         self.maximisation_minorisation = maximisation_minorisation
         
     def sigmoid(self, X, β):
-        return expit(X @ β)
+        return 1/(1+np.exp(X @ β))
 
     def fit(self, X, Y, iter_max = 100, interactions = [], l2=0): 
         
@@ -20,6 +19,8 @@ class LR():
         # iter_max- maximum number of iterations 
         # interactions- a matrix with two columns, in which each row specifies a pair of variables between which we want to consider interactions
         # l2- ridge regularization strength
+        
+        betas = []
         
         X=np.c_[np.ones(X.shape[0]) , X.values]
         self.interactions = interactions
@@ -42,9 +43,11 @@ class LR():
             H = np.transpose(X) @ W @ X
             grad = np.transpose(X) @ (Y-π)
             β_new = β_old - np.linalg.inv(H + l2*np.eye(H.shape[0])) @ grad
+            betas.append(β_new)
         self.beta = β_new
         if i==iter_max:
             warnings.warn("Algorithm didn't converge! Iteration limit reached!", ConvergenceWarning)
+        return betas
 
     def predict(self, X, p=1/2):
         X_exp = np.c_[np.ones(X.shape[0]) , X.values]
